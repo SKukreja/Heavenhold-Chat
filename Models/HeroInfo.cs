@@ -158,6 +158,9 @@ namespace HeavenholdBot.Models
         [JsonProperty("illustration", NullValueHandling = NullValueHandling.Ignore)]
         public string Illustration { get; set; }
 
+        [JsonProperty("portrait", NullValueHandling = NullValueHandling.Ignore)]
+        public Portrait[] Portrait { get; set; }
+
         [JsonProperty("rating")]
         public string Rating { get; set; }
 
@@ -173,6 +176,9 @@ namespace HeavenholdBot.Models
 
         [JsonProperty("pve_rating", NullValueHandling = NullValueHandling.Ignore)]
         public string PveRating { get; set; }
+
+        [JsonProperty("coop_rating", NullValueHandling = NullValueHandling.Ignore)]
+        public string CoopRating { get; set; }
 
         [JsonProperty("story_rating", NullValueHandling = NullValueHandling.Ignore)]
         public string StoryRating { get; set; }
@@ -242,6 +248,15 @@ namespace HeavenholdBot.Models
         public string ColosseumAnalysis { get; set; }
     }
 
+    public partial class Portrait
+    {
+        [JsonProperty("title")]
+        public string Title { get; set; }
+
+        [JsonProperty("art")]
+        public Uri Art { get; set; }
+    }
+
     public partial class BioFields
     {
         [JsonProperty("name")]
@@ -292,6 +307,10 @@ namespace HeavenholdBot.Models
 
         [JsonProperty("kr_release_date")]
         public string KrReleaseDate { get; set; }
+
+        [JsonProperty("jp_release_date")]
+        public string JpReleaseDate { get; set; }
+
     }
 
     public partial class Costume

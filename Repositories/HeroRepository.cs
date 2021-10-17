@@ -40,6 +40,32 @@ namespace HeavenholdBot.Repositories
             heroinfoList.RemoveAll(x => x.Acf.BioFields == null);
         }
 
+        public void RefreshData()
+        {
+            // Cache the JSON response in a local file
+            if (File.Exists(@"Heroes.json"))
+            {
+                try
+                {
+                    File.Delete(@"Heroes.json");
+                    using (var client = new WebClient())
+                    {
+                        var json = client.DownloadString(System.Configuration.ConfigurationManager.AppSettings["heroAPIEndpoint"]);
+                        json = Regex.Replace(json, "\\\\r\\\\n", "");
+                        File.WriteAllText(@"Heroes.json", json);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            // Deserialize the JSON objects into a list of a class instances
+            string jsonResponse = File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["heroCacheFileLocation"]);
+            heroinfoList = JsonConvert.DeserializeObject<List<HeroInfo>>(jsonResponse);
+            heroinfoList.RemoveAll(x => x.Acf.BioFields == null);
+        }
+
         public HeroInfo GetHero(string[] namelist)
         {
             KeyValuePair<HeroInfo, int> selectedHero = new KeyValuePair<HeroInfo, int>();

@@ -104,6 +104,15 @@ namespace Interactivity.Pagination
 
             return this;
         }
+        protected PaginatorBuilder WithoutExclusiveEmote()
+        {
+            Emotes.Clear();
+
+            Emotes.Add(new Emoji("📔"), PaginatorAction.HeroInfo);
+            Emotes.Add(new Emoji("🪄"), PaginatorAction.HeroAbilities);
+
+            return this;
+        }
         #endregion
     }
 }

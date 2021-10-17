@@ -108,6 +108,9 @@ namespace Interactivity.Pagination
         public new StaticPaginatorBuilder WithDefaultEmotes()
             => base.WithDefaultEmotes() as StaticPaginatorBuilder;
 
+        public new StaticPaginatorBuilder WithoutExclusiveEmote()
+            => base.WithoutExclusiveEmote() as StaticPaginatorBuilder;
+
         /// <summary>
         /// Sets the pages of the <see cref="StaticPaginator"/>.
         /// </summary>

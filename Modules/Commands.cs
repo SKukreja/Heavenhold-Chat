@@ -66,7 +66,7 @@ namespace HeavenholdBot.Modules
                         .WithUrl(heroInfo.Link.ToString())
                         .WithColor(new Color(_emojiList.GetRoleColorCode(heroInfo.Acf.BioFields.Element.ToString())))
                         .WithDescription(description)
-                        .WithThumbnailUrl(heroInfo.Acf.BioFields.Picture.ToString().Remove(heroInfo.Acf.BioFields.Picture.ToString().Length - 4) + "-150x150.jpg")
+                        .WithThumbnailUrl(heroInfo.Acf.Portrait.First().Art.ToString().Remove(heroInfo.Acf.Portrait.First().Art.ToString().Length - 4) + "-150x150.jpg")
                         .AddField("Atk", heroInfo.Acf.StatFields.Atk, true)
                         .AddField("HP", heroInfo.Acf.StatFields.Hp, true)
                         .AddField("Def", heroInfo.Acf.StatFields.Def, true)
@@ -93,7 +93,7 @@ namespace HeavenholdBot.Modules
                                 .WithTitle(System.Web.HttpUtility.HtmlDecode(heroInfo.Title.Rendered))
                             .WithUrl(heroInfo.Link.ToString())
                             .WithColor(new Color(_emojiList.GetRoleColorCode(heroInfo.Acf.BioFields.Element.ToString())))
-                            .WithThumbnailUrl(heroInfo.Acf.BioFields.Picture.ToString().Remove(heroInfo.Acf.BioFields.Picture.ToString().Length - 4) + "-150x150.jpg")
+                            .WithThumbnailUrl(heroInfo.Acf.Portrait.First().Art.ToString().Remove(heroInfo.Acf.Portrait.First().Art.ToString().Length - 4) + "-150x150.jpg")
                             .AddField("Normal Atk - " + heroInfo.Acf.AbilityFields.NormalAtkName, heroInfo.Acf.AbilityFields.NormalAtkDescription.Replace("<br />", System.Environment.NewLine) + System.Environment.NewLine + "_ _" + System.Environment.NewLine + _emojiList.GetEmojiCode(heroInfo.Acf.AbilityFields.ChainStateTrigger.ToString()) + " → " + _emojiList.GetEmojiCode(heroInfo.Acf.AbilityFields.ChainStateResult.ToString()), false)
                             .AddField("Chain Skill - " + heroInfo.Acf.AbilityFields.ChainSkillName, heroInfo.Acf.AbilityFields.ChainSkillDescription.Replace("<br />", System.Environment.NewLine), false)
                             .AddField("Special Ability - " + heroInfo.Acf.AbilityFields.SpecialAbilityName, heroInfo.Acf.AbilityFields.SpecialAbilityDescription.Replace("<br />", System.Environment.NewLine), false)
@@ -105,7 +105,7 @@ namespace HeavenholdBot.Modules
                                 .WithTitle(System.Web.HttpUtility.HtmlDecode(heroInfo.Title.Rendered))
                             .WithUrl(heroInfo.Link.ToString())
                             .WithColor(new Color(_emojiList.GetRoleColorCode(heroInfo.Acf.BioFields.Element.ToString())))
-                            .WithThumbnailUrl(heroInfo.Acf.BioFields.Picture.ToString().Remove(heroInfo.Acf.BioFields.Picture.ToString().Length - 4) + "-150x150.jpg")
+                            .WithThumbnailUrl(heroInfo.Acf.Portrait.First().Art.ToString().Remove(heroInfo.Acf.Portrait.First().Art.ToString().Length - 4) + "-150x150.jpg")
                             .AddField("Normal Atk - " + heroInfo.Acf.AbilityFields.NormalAtkName, heroInfo.Acf.AbilityFields.NormalAtkDescription.Replace("<br />", System.Environment.NewLine), false)
                             .AddField("Chain Skill" + heroInfo.Acf.AbilityFields.ChainSkillName, "N/A", false)
                             .AddField("Special Ability", "N/A", false)
@@ -119,7 +119,7 @@ namespace HeavenholdBot.Modules
                         #region Page 3 - Exclusive Weapon
 
 
-                        if (heroInfo.Acf.BioFields.ExclusiveWeapon.Any())
+                        if (heroInfo.Acf.BioFields.ExclusiveWeapon != null)
                         {
                             // Find the weapon
                             ItemInfo itemInfo = Program._itemList.GetItem(heroInfo.Acf.BioFields.ExclusiveWeapon.First().PostTitle.Split(" "));
@@ -477,7 +477,17 @@ namespace HeavenholdBot.Modules
                         }
                         #endregion
 
-                        var pager = new StaticPaginatorBuilder().WithUsers(Context.User).WithPages(list).WithFooter(PaginatorFooter.Users).Build();
+                        Paginator pager;
+
+                        if (heroInfo.Acf.BioFields.ExclusiveWeapon != null)
+                        {
+                            pager = new StaticPaginatorBuilder().WithUsers(Context.User).WithPages(list).WithFooter(PaginatorFooter.Users).WithDefaultEmotes().Build();
+                        }
+                        else
+                        {
+                            pager = new StaticPaginatorBuilder().WithUsers(Context.User).WithPages(list).WithFooter(PaginatorFooter.Users).WithoutExclusiveEmote().Build();
+                        }
+
                         await Interactivity.SendPaginatorAsync(pager, Context.Channel, TimeSpan.FromMinutes(2));
                     }
                     else
@@ -910,7 +920,7 @@ namespace HeavenholdBot.Modules
             }
         }
 
-        [Command("help")]
+        [Command("help", RunMode = RunMode.Async)]
         public async Task Help()
         {
             try
@@ -919,14 +929,14 @@ namespace HeavenholdBot.Modules
                 var builder = new EmbedBuilder()
                .WithTitle("Commands")
                .WithColor(Discord.Color.Teal)
-               .WithDescription("I can pin messages if you react to them with <:pin:800029740537872407>!")
+               .WithDescription("I can help look up items and heroes on heavenhold.com!")
                .WithFooter(footer =>
                {
                    footer
                    .WithText("Powered by Heavenhold.com")
                    .WithIconUrl(System.Configuration.ConfigurationManager.AppSettings["copyRightIconUrl"]);
                })
-               .AddField("!hero [part of a hero's name]", "\"!hero Lupina\" or \"!hero ice witch\" to get Ice Witch Lupina")
+               .AddField("!hero [part of a hero's name]", "\"!hero Lupina\" or \"!hero ice witch\" to get Ice Witch Lupina. Use the reactions to view different pages.")
                .AddField("!item [part of an item's name]", "\"!item training staff\"")
                .AddField("!bg", "Quickly get a link to the heavenhold.com beginner guide")
                .AddField("!tl", "Quickly get a link to the heavenhold.com tier list")
@@ -940,7 +950,7 @@ namespace HeavenholdBot.Modules
             }
         }
 
-        [Command("bg")]
+        [Command("bg", RunMode = RunMode.Async)]
         [Alias("beginner")]
         public async Task BeginnerGuide()
         {
@@ -954,7 +964,7 @@ namespace HeavenholdBot.Modules
             }
         }
 
-        [Command("tl")]
+        [Command("tl", RunMode = RunMode.Async)]
         [Alias("tierlist")]
         public async Task TierList()
         {
@@ -968,7 +978,7 @@ namespace HeavenholdBot.Modules
             }
         }
 
-        [Command("teams")]
+        [Command("teams", RunMode = RunMode.Async)]
         [Alias("suggestedteams")]
         public async Task Teams()
         {
@@ -980,6 +990,22 @@ namespace HeavenholdBot.Modules
             {
                 Console.Write(e.Message);
             }
+        }
+
+        [Command("refresh")]
+        public Task Refresh()
+        {
+            try
+            {
+                Program._heroList.RefreshData();
+                Program._itemList.RefreshData();
+            }
+            catch (Exception e)
+            {
+                Console.Write(e.Message);
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

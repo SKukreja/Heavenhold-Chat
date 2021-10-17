@@ -36,6 +36,28 @@ namespace HeavenholdBot.Repositories
             iteminfoList = JsonConvert.DeserializeObject<List<ItemInfo>>(File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["itemCacheFileLocation"]));
         }
 
+        public void RefreshData()
+        {
+            // Cache the API response in a local JSON file
+            if (File.Exists(@"Items.json"))
+            {
+                try
+                {
+                    File.Delete(@"Items.json");
+                    using (var client = new WebClient())
+                    {
+                        var json = client.DownloadString(System.Configuration.ConfigurationManager.AppSettings["itemAPIEndpoint"]);
+                        File.WriteAllText(@"Items.json", json);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            iteminfoList = JsonConvert.DeserializeObject<List<ItemInfo>>(File.ReadAllText(System.Configuration.ConfigurationManager.AppSettings["itemCacheFileLocation"]));
+        }
+
         public ItemInfo GetItem(string[] namelist)
         {
             KeyValuePair<ItemInfo, int> selectedItem = new KeyValuePair<ItemInfo, int>();
